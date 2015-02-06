@@ -36,7 +36,7 @@ function PatientLookup() {
 }
 
 PatientLookup.prototype.getOrCreate = function(id) {
-  if (this.lookup[id]===undefined) {
+  if this.lookup[id]===undefined {
     var newPatient = new Patient(id);
     this.lookup[id] = newPatient;
     return newPatient;

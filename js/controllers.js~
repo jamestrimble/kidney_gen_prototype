@@ -2,9 +2,65 @@
 
 /* Controllers */
 
-var phonecatApp = angular.module('datagenApp', []);
+var datagenApp = angular.module('datagenApp' , []);
 
-phonecatApp.controller('GeneratorCtrl', function($scope) {
+
+
+datagenApp.controller('ConverterCtrl', function($scope) {
+  $scope.onSubmitted = function() {
+    var zip = new JSZip();
+    var nConverted = 0;
+    var selectedFile = $("#converter-file").get(0).files[0];
+    console.log(selectedFile.name);
+    var reader = new FileReader();
+    (function() {
+      var fileName = selectedFile.name;
+      reader.onload = function(e) {
+        console.log(e.target.result);
+        var iDataset = new GeneratedDataset();
+        iDataset.readJsonString(e.target.result);
+        console.log(iDataset);
+        zip.file(fileName + ".xml", iDataset.toXmlString());
+        var content = zip.generate({type:"blob"});
+        saveAs(content, "converted.zip");
+      }; 
+    })();
+
+    reader.readAsText(selectedFile);
+
+    /*var formData = new FormData($('#converter-form')[0]);
+    var beforeSendHandler = function() {};
+    var completeHandler = function() {};
+    var errorHandler = function() {};
+    var progressHandlingFunction = function(d) {console.log(d)};
+    $.ajax({
+        url: '/to-json.json',  //Server script to process data
+        type: 'POST',
+        xhr: function() {  // Custom XMLHttpRequest
+            var myXhr = $.ajaxSettings.xhr();
+            if(myXhr.upload){ // Check if upload property exists
+                myXhr.upload.addEventListener('progress',progressHandlingFunction, false); // For handling the progress of the upload
+            }
+            return myXhr;
+        },
+        //Ajax events
+        beforeSend: beforeSendHandler,
+        success: completeHandler,
+        error: errorHandler,
+        // Form data
+        data: formData,
+        //Options to tell jQuery not to process data or worry about content-type.
+        cache: false,
+        contentType: false,
+        processData: false
+    });*/
+  };
+});
+
+
+
+
+datagenApp.controller('GeneratorCtrl', function($scope) {
   /*$scope.phones = [
     {'name': 'Nexus S',
      'snippet': 'Fast just got faster with Nexus S.'},
@@ -98,7 +154,7 @@ var generateInstances = function(zip, gen, genConfig, i) {
     zip.file("genjson-" + i + ".json", generatedDataset.toJsonString());
   }
 
-  if (++i < gen.numberOfInstances) {
+  if (++i < genConfig.numberOfInstances) {
     $("#progress-message").text("Generating instance " + i);
     setTimeout(function() {generateInstances(zip, gen, genConfig, i)}, 1);
   } else {
@@ -124,5 +180,7 @@ var generateInstances = function(zip, gen, genConfig, i) {
   }, 1);
 });
 */
+
+
 
 

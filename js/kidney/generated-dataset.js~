@@ -29,7 +29,6 @@ GeneratedDataset.prototype.readJsonString = function(s) {
 GeneratedDataset.prototype.readXmlString = function(s) {
   var d = xmlToJson($.parseXML(s)).data.entry;
   console.log(d);
-  if (!$.isArray(d)) d = [d];
   var patientLookup = new PatientLookup();
   for (var i=0; i<d.length; i++) {
     var dd = d[i];

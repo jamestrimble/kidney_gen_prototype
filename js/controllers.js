@@ -2,9 +2,81 @@
 
 /* Controllers */
 
-var phonecatApp = angular.module('datagenApp', []);
+var datagenApp = angular.module('datagenApp' , []);
 
-phonecatApp.controller('GeneratorCtrl', function($scope) {
+
+
+datagenApp.controller('ConverterCtrl', function($scope) {
+  $scope.fileFormat = "xml";
+  $scope.onSubmitted = function() {
+    var zip = new JSZip();
+    var nConverted = 0;
+    var files = $("#converter-file").get(0).files;
+    for (var i=0; i<files.length; i++) {
+      var selectedFile = files[i];
+      console.log(selectedFile.name);
+      var reader = new FileReader();
+      (function() {
+        var fileName = selectedFile.name;
+        reader.onload = function(e) {
+          console.log(e.target.result);
+          var iDataset = new GeneratedDataset();
+          if (/\.json$/.test(fileName)) {
+            iDataset.readJsonString(e.target.result);
+          } else {
+            iDataset.readXmlString(e.target.result);
+            console.log("abc");
+          }
+          console.log(iDataset);
+          nConverted++;
+          if ($scope.fileFormat==="xml") {
+            zip.file(fileName.replace(/\.[^.]*$/, "") + ".xml", iDataset.toXmlString());
+          } else {
+            zip.file(fileName.replace(/\.[^.]*$/, "") + ".json", iDataset.toJsonString());
+          }
+          if (nConverted===files.length) {
+            var content = zip.generate({type:"blob"});
+            saveAs(content, "converted.zip");
+          }
+        }; 
+      })();
+
+      reader.readAsText(selectedFile);
+    }
+
+    /*var formData = new FormData($('#converter-form')[0]);
+    var beforeSendHandler = function() {};
+    var completeHandler = function() {};
+    var errorHandler = function() {};
+    var progressHandlingFunction = function(d) {console.log(d)};
+    $.ajax({
+        url: '/to-json.json',  //Server script to process data
+        type: 'POST',
+        xhr: function() {  // Custom XMLHttpRequest
+            var myXhr = $.ajaxSettings.xhr();
+            if(myXhr.upload){ // Check if upload property exists
+                myXhr.upload.addEventListener('progress',progressHandlingFunction, false); // For handling the progress of the upload
+            }
+            return myXhr;
+        },
+        //Ajax events
+        beforeSend: beforeSendHandler,
+        success: completeHandler,
+        error: errorHandler,
+        // Form data
+        data: formData,
+        //Options to tell jQuery not to process data or worry about content-type.
+        cache: false,
+        contentType: false,
+        processData: false
+    });*/
+  };
+});
+
+
+
+
+datagenApp.controller('GeneratorCtrl', function($scope) {
   /*$scope.phones = [
     {'name': 'Nexus S',
      'snippet': 'Fast just got faster with Nexus S.'},
@@ -124,5 +196,7 @@ var generateInstances = function(zip, gen, genConfig, i) {
   }, 1);
 });
 */
+
+
 
 
