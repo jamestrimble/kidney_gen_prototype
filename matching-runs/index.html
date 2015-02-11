@@ -1,0 +1,30 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8">
+
+<title>Matching run tool</title>
+<meta name="description" content="">
+<meta name="author" content="James Trimble">
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<h1>Matching run tool for NHSBT (experimental)</h1>
+
+<p>Paste an XML or JSON input file into the text area below, then click Submit
+to view matching-run results</p>
+
+<textarea id="input-data" rows="10" cols="80" placeholder="Paste XML or JSON here"></textarea><br>
+<button id="submit-input">Submit</button><br>
+
+<pre><code id="results"></code></pre>
+
+<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
