@@ -1,5 +1,6 @@
 (function() {
   var convert = function() {
+    $("code#results").text("Finding optimal set of exchanges. This could take up to ten seconds.");
     var inputData = $("textarea#input-data").val();
     var url = "https://salty-brushlands-1053.herokuapp.com/match";
     var postData = {
