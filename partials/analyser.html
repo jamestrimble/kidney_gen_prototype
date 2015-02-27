@@ -1,0 +1,63 @@
+
+      <div>
+        <div class="row">
+          <div class="large-12 columns">
+            <h1>Analyser</h1>
+          </div>
+          
+          <div class="large-12 columns">
+            <form id="analyser-form" name="analyserform" ng-submit="onSubmitted()" novalidate>
+              <div class="row">
+                <div class="small-4 columns">
+                  <label for="analyserFile">Files to analyse</label>
+                </div>
+                <div class="small-8 columns">
+                  <input id="analyser-file" type="file" multiple>
+                </div>
+                <div class="small-12 columns">
+                  <button type="submit" class="medium radius button">Analyse</button>
+                </div>
+                <div class="small-12 columns">
+                  <table ng-show="results.length">
+                    <tr>
+                      <th>File</th>
+                      <th>Strongly-connected components</th>
+                      <th>Vertices in largest component</th>
+                      <th>Single-vertex components</th>
+                      <th>Patients</th>
+                      <th>Donors</th>
+                      <th>Altruistic Donors</th>
+                      <th>TODO: alt. donor proportion</th>
+                      <th>Vertices</th>
+                      <th>Edges</th>
+                      <th>Edges exc. to alt.</th>
+                      <th>Proportion of edges exc. to alt.</th>
+                      <th>Loops</th>
+                      <th ng-repeat="d1 in results[0].chains">Chains of length {{d1.length}}</th>
+                      <th ng-repeat="d1 in results[0].cycles">Cycles of length {{d1.length}}</th>
+                    </tr>
+                    <tr ng-repeat="d in results">
+                      <td>{{d.fileName}}</td>
+                      <td>{{d.scComponents}}</td>
+                      <td>{{d.verticesInLargestComponent}}</td>
+                      <td>{{d.singleVertexSccs}}</td>
+                      <td>{{d.patients}}</td>
+                      <td>{{d.donors}}</td>
+                      <td>{{d.altruisticDonors}}</td>
+                      <td>{{d.altruisticDonorProportion}}</td>
+                      <td>{{d.vertices}}</td>
+                      <td>{{d.edges}}</td>
+                      <td>{{d.edgesExcToAlt}}</td>
+                      <td>{{d.proportionEdgesExcToAlt}}</td>
+                      <td>{{d.loops}}</td>
+                      <td ng-repeat="d1 in d.chains">{{d1.count}}</td>
+                      <td ng-repeat="d1 in d.cycles">{{d1.count}}</td>
+                  </table>
+                </div>
+              </div>
+            </form>
+
+
+          </div>
+        </div>
+      </div>

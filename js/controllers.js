@@ -2,11 +2,41 @@
 
 /* Controllers */
 
-var datagenApp = angular.module('datagenApp' , []);
+var kidneyControllers = angular.module('kidneyControllers' , []);
 
+kidneyControllers.controller('AnalyserCtrl', function($scope, $http) {
+  $scope.results = [];
+  $scope.onSubmitted = function() {
+    var files = $("#analyser-file").get(0).files;
+    $scope.uploadFile(files, 0);
+    $scope.results = [];
+  };
+  $scope.uploadFile = function(files, index) {
+    if (index >= files.length) return;
+    var file = files[index];
+    var fileName = file.name;
+    if (/\.json$/.test(fileName)) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        console.log(e);
+        var inputJson = JSON.parse(e.target.result);
+        $http({
+          method: "POST",
+          url: 'http://guarded-chamber-5937.herokuapp.com/',
+          data: $.param({data:JSON.stringify(inputJson)}),
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).success(function(data) {
+          data.fileName = fileName;
+          $scope.results.push(data);
+          $scope.uploadFile(files, index+1);
+        });
+      };
+      reader.readAsText(file);
+    }
+  };
+});
 
-
-datagenApp.controller('ConverterCtrl', function($scope) {
+kidneyControllers.controller('ConverterCtrl', function($scope) {
   $scope.fileFormat = "xml";
   $scope.onSubmitted = function() {
     var zip = new JSZip();
@@ -18,6 +48,7 @@ datagenApp.controller('ConverterCtrl', function($scope) {
       var reader = new FileReader();
       (function() {
         var fileName = selectedFile.name;
+        var baseName = fileName.replace(/\.[^.]*$/, "");
         reader.onload = function(e) {
           console.log(e.target.result);
           var iDataset = new GeneratedDataset();
@@ -25,14 +56,13 @@ datagenApp.controller('ConverterCtrl', function($scope) {
             iDataset.readJsonString(e.target.result);
           } else {
             iDataset.readXmlString(e.target.result);
-            console.log("abc");
           }
           console.log(iDataset);
           nConverted++;
           if ($scope.fileFormat==="xml") {
-            zip.file(fileName.replace(/\.[^.]*$/, "") + ".xml", iDataset.toXmlString());
+            zip.file(baseName + ".xml", iDataset.toXmlString());
           } else {
-            zip.file(fileName.replace(/\.[^.]*$/, "") + ".json", iDataset.toJsonString());
+            zip.file(baseName + ".json", iDataset.toJsonString());
           }
           if (nConverted===files.length) {
             var content = zip.generate({type:"blob"});
@@ -76,7 +106,7 @@ datagenApp.controller('ConverterCtrl', function($scope) {
 
 
 
-datagenApp.controller('GeneratorCtrl', function($scope) {
+kidneyControllers.controller('GeneratorCtrl', function($scope) {
   /*$scope.phones = [
     {'name': 'Nexus S',
      'snippet': 'Fast just got faster with Nexus S.'},
