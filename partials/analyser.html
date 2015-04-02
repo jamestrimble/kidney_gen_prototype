@@ -27,12 +27,10 @@
                       <th>Patients</th>
                       <th>Donors</th>
                       <th>Altruistic Donors</th>
-                      <th>TODO: alt. donor proportion</th>
+                      <th>Proportion of donors who are altruistic</th>
                       <th>Vertices</th>
                       <th>Edges</th>
-                      <th>Edges exc. to alt.</th>
-                      <th>Proportion of edges exc. to alt.</th>
-                      <th>Loops</th>
+                      <th>Edges excl. edges to altruists</th>
                       <th ng-repeat="d1 in results[0].chains">Chains of length {{d1.length}}</th>
                       <th ng-repeat="d1 in results[0].cycles">Cycles of length {{d1.length}}</th>
                     </tr>
@@ -44,12 +42,10 @@
                       <td>{{d.patients}}</td>
                       <td>{{d.donors}}</td>
                       <td>{{d.altruisticDonors}}</td>
-                      <td>{{d.altruisticDonorProportion}}</td>
+                      <td>{{d.altruisticDonorProportion*100 | number:2}}%</td>
                       <td>{{d.vertices}}</td>
                       <td>{{d.edges}}</td>
                       <td>{{d.edgesExcToAlt}}</td>
-                      <td>{{d.proportionEdgesExcToAlt}}</td>
-                      <td>{{d.loops}}</td>
                       <td ng-repeat="d1 in d.chains">{{d1.count}}</td>
                       <td ng-repeat="d1 in d.cycles">{{d1.count}}</td>
                   </table>

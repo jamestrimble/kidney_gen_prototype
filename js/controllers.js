@@ -15,25 +15,46 @@ kidneyControllers.controller('AnalyserCtrl', function($scope, $http) {
     if (index >= files.length) return;
     var file = files[index];
     var fileName = file.name;
+    var reader = new FileReader();
     if (/\.json$/.test(fileName)) {
-      var reader = new FileReader();
       reader.onload = function(e) {
-        console.log(e);
-        var inputJson = JSON.parse(e.target.result);
-        $http({
-          method: "POST",
-          url: 'http://guarded-chamber-5937.herokuapp.com/',
-          data: $.param({data:JSON.stringify(inputJson)}),
-          headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-        }).success(function(data) {
-          data.fileName = fileName;
-          $scope.results.push(data);
-          $scope.uploadFile(files, index+1);
-        });
+        var iDataset = new GeneratedDataset();
+        iDataset.readJsonString(e.target.result);
+        var compactData = iDataset.toCompactString();
+        analyse(compactData, fileName, files, index);
       };
-      reader.readAsText(file);
+    } else if (/\.input$/.test(fileName)) {
+      console.log("input");
+      reader.onload = function(e) {
+        var iDataset = new GeneratedDataset();
+        iDataset.readInputString(e.target.result);
+        var compactData = iDataset.toCompactString();
+        analyse(compactData, fileName, files, index);
+      };
+    } else if (/\.xml$/.test(fileName)) {
+      console.log("xml");
+      reader.onload = function(e) {
+        var iDataset = new GeneratedDataset();
+        iDataset.readXmlString(e.target.result);
+        var compactData = iDataset.toCompactString();
+        analyse(compactData, fileName, files, index);
+      };
     }
+    reader.readAsText(file);
   };
+  var analyse = function(compactData, fileName, files, index) {
+    $http({
+      method: "POST",
+      url: 'http://guarded-chamber-5937.herokuapp.com/',
+      //url: 'http://localhost:5000',
+      data: $.param({data:compactData}),
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+    }).success(function(data) {
+      data.fileName = fileName;
+      $scope.results.push(data);
+      $scope.uploadFile(files, index+1);
+    });
+  }
 });
 
 kidneyControllers.controller('ConverterCtrl', function($scope) {
@@ -54,8 +75,10 @@ kidneyControllers.controller('ConverterCtrl', function($scope) {
           var iDataset = new GeneratedDataset();
           if (/\.json$/.test(fileName)) {
             iDataset.readJsonString(e.target.result);
-          } else {
+          } else if (/\.xml$/.test(fileName)) {
             iDataset.readXmlString(e.target.result);
+          } else {
+            iDataset.readInputString(e.target.result);
           }
           console.log(iDataset);
           nConverted++;

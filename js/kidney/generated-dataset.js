@@ -2,6 +2,30 @@ function GeneratedDataset() {
   this.data = [];
 }
 
+GeneratedDataset.prototype.readInputString = function(s) {
+  var tokens = s.split(/\s+/);
+  var i=0;
+  var next = function() { return +tokens[i++]; };
+  var nPairs = next();
+  var patientLookup = new PatientLookup();
+  var donors
+  for (var j=0; j<nPairs; j++) {
+    var donor = new Donor(j, 50, undefined, false);
+    donor.addSource(patientLookup.getOrCreate(j));
+    this.addDonor(donor);
+  }
+  var nEdges = next();
+  var origin;
+  while ((origin = next()) != -1) {
+    dest = next();
+    score = next();
+    this.getDonorAt(origin).addMatch({
+      recipient: patientLookup.getOrCreate(dest),
+      score: score
+    });
+  }
+};
+
 GeneratedDataset.prototype.readJsonString = function(s) {
   var d = JSON.parse(s).data;
   var patientLookup = new PatientLookup();
@@ -36,7 +60,7 @@ GeneratedDataset.prototype.readXmlString = function(s) {
     var donorId = dd["@attributes"].donor_id;
     var altruistic = dd.altruistic && dd.altruistic["#text"]==="true";
     var donor = new Donor(+donorId, +dd.dage["#text"], undefined, altruistic);
-    console.log(donor);
+    //console.log(donor);
     if (dd.sources && dd.sources.source) {
       if (!$.isArray(dd.sources.source)) dd.sources.source = [dd.sources.source];
       dd.sources.source.forEach(function(source) {
@@ -60,6 +84,27 @@ GeneratedDataset.prototype.readXmlString = function(s) {
 GeneratedDataset.prototype.addDonor = function(donor) {
   this.data.push(donor);
 };
+GeneratedDataset.prototype.toCompactString = function() {
+  var tokens = [];
+  for (var i=0; i<this.data.length; i++) {
+    var donor = this.getDonorAt(i);
+    tokens.push(donor.id);
+    tokens.push(donor.isAltruistic ? 1 : 0);
+    tokens.push(donor.dage);
+    if (!donor.isAltruistic) {
+      tokens.push(donor.sources.length);
+      donor.sources.forEach(function(d) {
+        tokens.push(d.id);
+      });
+    }
+    tokens.push(donor.matches.length);
+    donor.matches.forEach(function(d) {
+      tokens.push(d.recipient.id);
+      tokens.push(d.score);
+    });
+  }
+  return tokens.join(" ");
+}
 GeneratedDataset.prototype.toJsonString = function() {
   var dataObj = {};
   for (var i=0; i<this.data.length; i++) {
